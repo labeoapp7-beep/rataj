@@ -84,11 +84,6 @@
   #toast b.t{display:block;color:var(--ok);font-size:15px;margin-bottom:5px}
   #toast small{display:block;color:var(--muted);font-size:13px;line-height:1.6}
   #toast small b{color:var(--txt)}
-  #tq{
-    display:block;margin:0 0 7px;padding-inline-start:9px;
-    border-inline-start:2px solid var(--gold);
-    color:var(--txt);font-size:12.5px;line-height:1.55;quotes:none
-  }
 
   /* خطة الطوارئ */
   #rescue{display:none;margin-top:18px;padding:16px;background:var(--card);border:1px solid var(--gold);border-radius:14px}
@@ -144,12 +139,11 @@
 
   <div id="backup">لم تفتح الصفحة؟ <a id="blink" href="#">اضغط هنا للانتقال يدوياً</a></div>
 
-  <footer>شاليهات رتاج · الرياض · <span id="ver">v5</span></footer>
+  <footer>شاليهات رتاج · الرياض · <span id="ver">v6</span></footer>
 </div>
 
 <div id="toast" role="status" aria-live="polite">
   <b class="t">✅ تم نسخ التقييم</b>
-  <q id="tq"></q>
   <small>جارٍ تحويلك… ضع النجوم، ثم اضغط <b>مطولاً</b> في خانة التعليق واختر «لصق».</small>
 </div>
 
@@ -285,9 +279,10 @@
     setTimeout(function(){ backup.style.display = "block"; }, 1400);
   }
 
-  function showToast(text){
-    /* عرض النص المنسوخ فعلاً — يجعل أي خلل في النسخ مرئياً فوراً */
-    document.getElementById("tq").textContent = text;
+  /* لا نعرض النص المنسوخ: العميل قرأ عنواناً مختصراً على الزر، ورؤية صياغة
+     أطول تبدو كأن الصفحة كتبت شيئاً لم يختره. عند اللصق يقرأ نصاً واحداً
+     بلا مقارنة فيراه معبّراً عن اختياره. */
+  function showToast(){
     toast.classList.add("on");
     try{ if (navigator.vibrate) navigator.vibrate(30); }catch(e){}
   }
@@ -309,7 +304,7 @@
     var text = pick(parseInt(btn.getAttribute("data-i"), 10) || 0);
     var t0   = Date.now();
 
-    showToast(text);                   /* تأكيد فوري بلا انتظار */
+    showToast();                       /* تأكيد فوري بلا انتظار */
 
     copyNow(text, function(ok){        /* استُدعي أول شيء — الإيماءة ما زالت حيّة */
       if (!ok){
@@ -317,7 +312,7 @@
         showRescue(text);
         return;
       }
-      setTimeout(redirect, Math.max(300, 1400 - (Date.now() - t0)));
+      setTimeout(redirect, Math.max(300, 1100 - (Date.now() - t0)));
     });
   }, false);
 
