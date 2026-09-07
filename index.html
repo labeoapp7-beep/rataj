@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>قيّم شاليهات رتاج</title>
+<meta name="theme-color" content="#0f1720">
+<meta name="description" content="اختر تقييمك بضغطة واحدة — ننسخه لك وننقلك مباشرة لخرائط جوجل.">
+
+<!-- معاينة الرابط داخل واتساب -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="قيّم تجربتك في شاليهات رتاج ⭐">
+<meta property="og:description" content="ضغطة واحدة… ننسخ لك التقييم وننقلك مباشرة لخرائط جوجل.">
+<meta property="og:locale" content="ar_SA">
+
+<link rel="preconnect" href="https://search.google.com" crossorigin>
+<link rel="dns-prefetch" href="https://search.google.com">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%AD%90%3C/text%3E%3C/svg%3E">
+
+<style>
+  *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  :root{
+    --bg:#0f1720; --card:#182430; --line:#26374a;
+    --gold:#d9b166; --gold-d:#b8904a;
+    --txt:#eef4fa; --muted:#94a8bd; --ok:#2ea36a;
+  }
+  html,body{margin:0;padding:0}
+  body{
+    background:radial-gradient(120% 80% at 50% 0%,#1b2937 0%,var(--bg) 60%);
+    color:var(--txt);
+    font-family:system-ui,-apple-system,"Segoe UI",Tahoma,"Noto Naskh Arabic",sans-serif;
+    min-height:100dvh; line-height:1.7;
+    padding:22px 16px calc(28px + env(safe-area-inset-bottom));
+    display:flex; justify-content:center;
+  }
+  .wrap{width:100%;max-width:480px}
+
+  header{text-align:center;margin-bottom:20px}
+  .mark{
+    width:60px;height:60px;margin:0 auto 12px;border-radius:18px;
+    background:linear-gradient(145deg,var(--gold),var(--gold-d));
+    display:flex;align-items:center;justify-content:center;font-size:30px;
+    box-shadow:0 8px 22px rgba(217,177,102,.22)
+  }
+  h1{font-size:21px;margin:0 0 6px;font-weight:700}
+  .sub{color:var(--muted);font-size:14px;margin:0}
+
+  .steps{
+    display:flex;gap:6px;justify-content:center;margin:16px 0 22px;
+    font-size:11.5px;color:var(--muted)
+  }
+  .steps span{background:var(--card);border:1px solid var(--line);padding:5px 10px;border-radius:999px;white-space:nowrap}
+
+  .opt{
+    display:block;width:100%;min-height:60px;
+    background:var(--card);color:var(--txt);
+    border:1px solid var(--line);border-radius:14px;
+    padding:15px 16px;margin-bottom:11px;
+    font:inherit;font-size:15.5px;line-height:1.6;
+    text-align:right;cursor:pointer;
+    transition:transform .12s ease,border-color .12s ease,background .12s ease;
+  }
+  .opt:active{transform:scale(.975);border-color:var(--gold);background:#1e2c3a}
+  .opt::after{content:"انسخ وقيّم ←";display:block;margin-top:8px;font-size:12.5px;color:var(--gold);font-weight:600}
+
+  .own{
+    display:block;width:100%;min-height:52px;margin-top:6px;
+    background:transparent;border:1px dashed var(--line);border-radius:14px;
+    color:var(--muted);font:inherit;font-size:14.5px;padding:14px;cursor:pointer
+  }
+  .own:active{border-color:var(--gold);color:var(--txt)}
+
+  /* التنبيه العائم */
+  #toast{
+    position:fixed;inset-inline:16px;bottom:26px;z-index:50;
+    background:#0b1219;border:1px solid var(--line);
+    border-radius:16px;padding:15px 17px;
+    box-shadow:0 14px 40px rgba(0,0,0,.55);
+    opacity:0;transform:translateY(14px);pointer-events:none;
+    transition:opacity .16s ease,transform .16s ease;
+    max-width:480px;margin-inline:auto;
+  }
+  #toast.on{opacity:1;transform:translateY(0)}
+  #toast b.t{display:block;color:var(--ok);font-size:15px;margin-bottom:3px}
+  #toast small{display:block;color:var(--muted);font-size:13px;line-height:1.6}
+  #toast small b{color:var(--txt)}
+
+  /* خطة الطوارئ */
+  #rescue{display:none;margin-top:18px;padding:16px;background:var(--card);border:1px solid var(--gold);border-radius:14px}
+  #rescue p{margin:0 0 10px;font-size:14px;color:var(--gold)}
+  #rescue textarea{
+    width:100%;min-height:88px;padding:12px;border-radius:10px;
+    background:#0b1219;color:var(--txt);border:1px solid var(--line);
+    font:inherit;font-size:15px;resize:none
+  }
+  .go{
+    display:block;width:100%;min-height:54px;margin-top:11px;
+    background:linear-gradient(145deg,var(--gold),var(--gold-d));
+    color:#1a1206;border:0;border-radius:12px;
+    font:inherit;font-size:16px;font-weight:700;text-align:center;
+    text-decoration:none;padding:15px;cursor:pointer
+  }
+  #backup{display:none;margin-top:16px;text-align:center;font-size:14px}
+  #backup a{color:var(--gold)}
+  footer{margin-top:26px;text-align:center;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="mark">⭐</div>
+    <h1>شاليهات رتاج</h1>
+    <p class="sub">سعدنا بزيارتك — رأيك يهمنا ويأخذ ١٥ ثانية فقط</p>
+  </header>
+
+  <div class="steps">
+    <span>١ · اختر عبارة</span>
+    <span>٢ · ضع النجوم</span>
+    <span>٣ · الصق وانشر</span>
+  </div>
+
+  <main id="list">
+    <button class="opt" data-text="تجربة رائعة في شاليهات رتاج، المكان نظيف ومرتب والخصوصية ممتازة. أنصح فيه بشدة 👌">تجربة رائعة، المكان نظيف ومرتب والخصوصية ممتازة</button>
+
+    <button class="opt" data-text="استقبال راقي وتعامل محترم من الإدارة، والشاليه مجهز بكل ما نحتاجه. تجربة تستاهل التكرار.">استقبال راقي وتعامل محترم، والشاليه مجهز بالكامل</button>
+
+    <button class="opt" data-text="المسبح والجلسات الخارجية ممتازة والأجواء هادئة، قضينا وقتاً ممتعاً مع العائلة. شكراً شاليهات رتاج ✨">المسبح والجلسات الخارجية ممتازة والأجواء هادئة</button>
+
+    <button class="opt" data-text="الموقع سهل الوصول والسعر مناسب مقابل الخدمة المقدمة، والنظافة والترتيب على مستوى عالٍ.">الموقع سهل الوصول والسعر مناسب مقابل الخدمة</button>
+
+    <button class="opt" data-text="من أفضل الشاليهات التي جربناها، تنظيم ممتاز واستجابة سريعة لأي طلب. تقييمي ٥ نجوم ⭐">من أفضل الشاليهات، تنظيم ممتاز واستجابة سريعة</button>
+
+    <button class="own" id="own">✍️ سأكتب تقييمي بنفسي</button>
+  </main>
+
+  <section id="rescue">
+    <p>لم يسمح متصفحك بالنسخ التلقائي — اضغط مطولاً على النص ثم اختر «نسخ»:</p>
+    <textarea id="rtext" readonly></textarea>
+    <button class="go" id="rgo">تم النسخ — انقلني لخرائط جوجل</button>
+  </section>
+
+  <div id="backup">لم تفتح الصفحة؟ <a id="blink" href="#">اضغط هنا للانتقال يدوياً</a></div>
+
+  <footer>شاليهات رتاج · الرياض</footer>
+</div>
+
+<div id="toast" role="status" aria-live="polite">
+  <b class="t">✅ تم نسخ التقييم</b>
+  <small>جارٍ تحويلك… ضع النجوم، ثم اضغط <b>مطولاً</b> في خانة التعليق واختر «لصق».</small>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var PLACE_ID   = "ChIJkTSDitOpLz4RwuAaTzdMku8";
+  var REVIEW_URL = "https://search.google.com/local/writereview?placeid=" + PLACE_ID;
+  var MAPS_URL   = "https://www.google.com/maps/place/?q=place_id:" + PLACE_ID;
+
+  var UA        = navigator.userAgent || "";
+  var isAndroid = /android/i.test(UA);
+
+  var toast  = document.getElementById("toast");
+  var rescue = document.getElementById("rescue");
+  var rtext  = document.getElementById("rtext");
+  var backup = document.getElementById("backup");
+  document.getElementById("blink").href = REVIEW_URL;
+
+  /* ---------- النسخ: طبقتان + طوارئ ---------- */
+  function legacyCopy(text){
+    try{
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly","");
+      ta.style.cssText = "position:fixed;top:0;left:0;opacity:0;pointer-events:none";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      ta.setSelectionRange(0, text.length);      /* لازمة لـ iOS */
+      var ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      return ok;
+    }catch(e){ return false; }
+  }
+
+  function copyNow(text){
+    /* يُستدعى كأول سطر داخل الضغطة — بدون await قبله، وإلا يفشل على iOS */
+    if (navigator.clipboard && window.isSecureContext){
+      try{
+        navigator.clipboard.writeText(text)["catch"](function(){ legacyCopy(text); });
+        return true;
+      }catch(e){}
+    }
+    return legacyCopy(text);
+  }
+
+  /* ---------- التوجيه ---------- */
+  function redirect(){
+    if (isAndroid){
+      /* intent:// يخرج من متصفح واتساب الداخلي، ومعه رابط احتياطي مضمون */
+      window.location.href =
+        "intent://search.google.com/local/writereview?placeid=" + PLACE_ID +
+        "#Intent;scheme=https;S.browser_fallback_url=" +
+        encodeURIComponent(REVIEW_URL) + ";end";
+    } else {
+      /* iOS وغيره: الرابط العادي، وتطبيق الخرائط يلتقطه عبر Universal Links */
+      window.location.href = REVIEW_URL;
+    }
+    setTimeout(function(){ backup.style.display = "block"; }, 1400);
+  }
+
+  function showToast(){
+    toast.classList.add("on");
+    try{ if (navigator.vibrate) navigator.vibrate(30); }catch(e){}
+  }
+
+  function showRescue(text){
+    rescue.style.display = "block";
+    rtext.value = text;
+    rtext.focus();
+    rtext.select();
+    try{ rtext.setSelectionRange(0, text.length); }catch(e){}
+    rescue.scrollIntoView({behavior:"smooth", block:"center"});
+  }
+
+  /* ---------- التفاعل ---------- */
+  document.getElementById("list").addEventListener("click", function(ev){
+    var btn = ev.target.closest(".opt");
+    if (!btn) return;
+
+    var text = btn.getAttribute("data-text");
+    var ok   = copyNow(text);          /* أول سطر — الإيماءة ما زالت حيّة */
+
+    if (!ok){ showRescue(text); return; }
+
+    showToast();
+    setTimeout(redirect, 1100);
+  }, false);
+
+  document.getElementById("own").addEventListener("click", redirect, false);
+  document.getElementById("rgo").addEventListener("click", redirect, false);
+
+  /* تسخين الاتصال بجوجل مبكراً لتقليل زمن الانتقال */
+  try{
+    var l = document.createElement("link");
+    l.rel = "prefetch"; l.href = MAPS_URL;
+    document.head.appendChild(l);
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
