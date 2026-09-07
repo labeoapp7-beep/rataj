@@ -144,7 +144,7 @@
 
   <div id="backup">لم تفتح الصفحة؟ <a id="blink" href="#">اضغط هنا للانتقال يدوياً</a></div>
 
-  <footer>شاليهات رتاج · الرياض · <span id="ver">v4</span></footer>
+  <footer>شاليهات رتاج · الرياض · <span id="ver">v5</span></footer>
 </div>
 
 <div id="toast" role="status" aria-live="polite">
@@ -240,22 +240,34 @@
     }
   }
 
-  function copyNow(text){
-    /* الترتيب مقصود: المسار المتزامن أولاً لأنه ينفَّذ داخل إيماءة المستخدم
-       ويضمن كتابة النص الصحيح فوراً. لو أخّرناه إلى catch الوعد لانتهت
-       صلاحية الإيماءة وفشل بصمت، فتبقى الحافظة على نصها السابق. */
+  /* لا نُبلّغ بالنجاح إلا بعد التأكد منه فعلياً.
+     الترتيب مقصود: المسار المتزامن أولاً لأنه ينفَّذ داخل إيماءة المستخدم.
+     ثم ننتظر نتيجة الـ Clipboard API الحقيقية بدل افتراض نجاحها. */
+  function copyNow(text, done){
     var sync = legacyCopy(text);
+    try{ window.focus(); }catch(e){}
 
-    var modern = false;
-    if (navigator.clipboard && window.isSecureContext){
-      try{
-        navigator.clipboard.writeText(text)["catch"](function(){});
-        modern = true;
-      }catch(e){}
+    if (!navigator.clipboard || !window.isSecureContext){
+      done(sync);
+      return;
     }
 
-    try{ window.focus(); }catch(e){}
-    return sync || modern;
+    var settled = false;
+    function finish(ok){
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      done(ok);
+    }
+    /* لا نُبقي العميل منتظراً لو تأخر الوعد */
+    var timer = setTimeout(function(){ finish(sync); }, 700);
+
+    try{
+      navigator.clipboard.writeText(text).then(
+        function(){ finish(true); },
+        function(){ finish(sync); }
+      );
+    }catch(e){ finish(sync); }
   }
 
   /* ---------- التوجيه ---------- */
@@ -295,12 +307,18 @@
     if (!btn) return;
 
     var text = pick(parseInt(btn.getAttribute("data-i"), 10) || 0);
-    var ok   = copyNow(text);          /* أول سطر — الإيماءة ما زالت حيّة */
+    var t0   = Date.now();
 
-    if (!ok){ showRescue(text); return; }
+    showToast(text);                   /* تأكيد فوري بلا انتظار */
 
-    showToast(text);
-    setTimeout(redirect, 1400);
+    copyNow(text, function(ok){        /* استُدعي أول شيء — الإيماءة ما زالت حيّة */
+      if (!ok){
+        toast.classList.remove("on");  /* لا نكذب على العميل */
+        showRescue(text);
+        return;
+      }
+      setTimeout(redirect, Math.max(300, 1400 - (Date.now() - t0)));
+    });
   }, false);
 
   document.getElementById("own").addEventListener("click", redirect, false);
