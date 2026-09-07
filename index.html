@@ -81,9 +81,14 @@
     max-width:480px;margin-inline:auto;
   }
   #toast.on{opacity:1;transform:translateY(0)}
-  #toast b.t{display:block;color:var(--ok);font-size:15px;margin-bottom:3px}
+  #toast b.t{display:block;color:var(--ok);font-size:15px;margin-bottom:5px}
   #toast small{display:block;color:var(--muted);font-size:13px;line-height:1.6}
   #toast small b{color:var(--txt)}
+  #tq{
+    display:block;margin:0 0 7px;padding-inline-start:9px;
+    border-inline-start:2px solid var(--gold);
+    color:var(--txt);font-size:12.5px;line-height:1.55;quotes:none
+  }
 
   /* خطة الطوارئ */
   #rescue{display:none;margin-top:18px;padding:16px;background:var(--card);border:1px solid var(--gold);border-radius:14px}
@@ -139,11 +144,12 @@
 
   <div id="backup">لم تفتح الصفحة؟ <a id="blink" href="#">اضغط هنا للانتقال يدوياً</a></div>
 
-  <footer>شاليهات رتاج · الرياض</footer>
+  <footer>شاليهات رتاج · الرياض · <span id="ver">v4</span></footer>
 </div>
 
 <div id="toast" role="status" aria-live="polite">
   <b class="t">✅ تم نسخ التقييم</b>
+  <q id="tq"></q>
   <small>جارٍ تحويلك… ضع النجوم، ثم اضغط <b>مطولاً</b> في خانة التعليق واختر «لصق».</small>
 </div>
 
@@ -199,19 +205,39 @@
 
   /* ---------- النسخ: طبقتان + طوارئ ---------- */
   function legacyCopy(text){
+    var ta = null, hooked = false;
+
+    /* اعتراض حدث النسخ: يفرض النص الصحيح حتى لو أخفق تحديد النص */
+    function onCopy(e){
+      try{
+        (e.clipboardData || window.clipboardData).setData("text/plain", text);
+        e.preventDefault();
+        hooked = true;
+      }catch(err){}
+    }
+
     try{
-      var ta = document.createElement("textarea");
+      document.addEventListener("copy", onCopy, true);
+
+      ta = document.createElement("textarea");
       ta.value = text;
-      ta.setAttribute("readonly","");
-      ta.style.cssText = "position:fixed;top:0;left:0;opacity:0;pointer-events:none";
+      ta.setAttribute("readonly","");           /* يمنع ظهور لوحة المفاتيح */
+      ta.style.cssText = "position:fixed;top:0;left:0;width:1px;height:1px;" +
+                         "padding:0;border:0;outline:0;background:transparent;opacity:0";
       document.body.appendChild(ta);
       ta.focus();
       ta.select();
       ta.setSelectionRange(0, text.length);      /* لازمة لـ iOS */
-      var ok = document.execCommand("copy");
-      document.body.removeChild(ta);
-      return ok;
-    }catch(e){ return false; }
+
+      var ok = false;
+      try{ ok = document.execCommand("copy"); }catch(err){}
+      return ok || hooked;
+    }catch(e){
+      return false;
+    }finally{
+      document.removeEventListener("copy", onCopy, true);
+      if (ta && ta.parentNode) ta.parentNode.removeChild(ta);
+    }
   }
 
   function copyNow(text){
@@ -247,7 +273,9 @@
     setTimeout(function(){ backup.style.display = "block"; }, 1400);
   }
 
-  function showToast(){
+  function showToast(text){
+    /* عرض النص المنسوخ فعلاً — يجعل أي خلل في النسخ مرئياً فوراً */
+    document.getElementById("tq").textContent = text;
     toast.classList.add("on");
     try{ if (navigator.vibrate) navigator.vibrate(30); }catch(e){}
   }
@@ -271,8 +299,8 @@
 
     if (!ok){ showRescue(text); return; }
 
-    showToast();
-    setTimeout(redirect, 1100);
+    showToast(text);
+    setTimeout(redirect, 1400);
   }, false);
 
   document.getElementById("own").addEventListener("click", redirect, false);
