@@ -100,16 +100,6 @@
     font:inherit;font-size:16px;font-weight:700;text-align:center;
     text-decoration:none;padding:15px;cursor:pointer
   }
-  /* لوحة التشخيص — لا تظهر إلا مع ?debug=1 */
-  #dbg{display:none;margin-top:18px;padding:14px;border-radius:12px;
-    background:#0b1219;border:1px solid var(--gold);
-    font-family:ui-monospace,Consolas,monospace;font-size:12px;
-    line-height:1.9;direction:ltr;text-align:left;color:var(--txt);
-    white-space:pre-wrap;word-break:break-word}
-  #dbg .k{color:var(--gold)}
-  #dbg .bad{color:#ff6b6b}
-  #dbg .good{color:var(--ok)}
-
   #backup{display:none;margin-top:16px;text-align:center;font-size:14px}
   #backup a{color:var(--gold)}
   footer{margin-top:26px;text-align:center;color:var(--muted);font-size:12px}
@@ -149,9 +139,7 @@
 
   <div id="backup">لم تفتح الصفحة؟ <a id="blink" href="#">اضغط هنا للانتقال يدوياً</a></div>
 
-  <section id="dbg"></section>
-
-  <footer>شاليهات رتاج · الرياض · <span id="ver">v7</span></footer>
+  <footer>شاليهات رتاج · الرياض · <span id="ver">v8</span></footer>
 </div>
 
 <div id="toast" role="status" aria-live="polite">
@@ -249,26 +237,26 @@
     try{ window.focus(); }catch(e){}
 
     if (!navigator.clipboard || !window.isSecureContext){
-      done(sync, {sync:sync, modern:"unavailable"});
+      done(sync);
       return;
     }
 
     var settled = false;
-    function finish(ok, state){
+    function finish(ok){
       if (settled) return;
       settled = true;
       clearTimeout(timer);
-      done(ok, {sync:sync, modern:state});
+      done(ok);
     }
     /* لا نُبقي العميل منتظراً لو تأخر الوعد */
-    var timer = setTimeout(function(){ finish(sync, "timeout"); }, 700);
+    var timer = setTimeout(function(){ finish(sync); }, 700);
 
     try{
       navigator.clipboard.writeText(text).then(
-        function(){ finish(true, "resolved"); },
-        function(err){ finish(sync, "rejected: " + (err && err.name ? err.name : "?")); }
+        function(){ finish(true); },
+        function(){ finish(sync); }
       );
-    }catch(e){ finish(sync, "threw: " + (e && e.name ? e.name : "?")); }
+    }catch(e){ finish(sync); }
   }
 
   /* ---------- التوجيه ---------- */
@@ -303,69 +291,18 @@
     rescue.scrollIntoView({behavior:"smooth", block:"center"});
   }
 
-  /* ---------- لوحة التشخيص (?debug=1) ---------- */
-  var DBG = /[?&]debug=1/.test(location.search);
-  var dbgBox = document.getElementById("dbg");
-
-  function row(label, value, cls){
-    var d = document.createElement("div");
-    var k = document.createElement("span");
-    k.className = "k"; k.textContent = label + ": ";
-    var v = document.createElement("span");
-    if (cls) v.className = cls;
-    v.textContent = value;
-    d.appendChild(k); d.appendChild(v);
-    dbgBox.appendChild(d);
-  }
-
-  function dbgReport(gi, vi, text, ok, info){
-    dbgBox.textContent = "";
-    dbgBox.style.display = "block";
-
-    row("version", document.getElementById("ver").textContent);
-    row("secureContext", String(window.isSecureContext), window.isSecureContext ? "good" : "bad");
-    row("clipboard API", String(!!navigator.clipboard), navigator.clipboard ? "good" : "bad");
-    row("group / variant", gi + " / " + vi);
-    row("text picked", text);
-    row("execCommand path", String(info.sync), info.sync ? "good" : "bad");
-    row("clipboard API path", info.modern, info.modern === "resolved" ? "good" : "bad");
-    row("reported success", String(ok), ok ? "good" : "bad");
-
-    var b = document.createElement("button");
-    b.className = "go";
-    b.textContent = "اقرأ ما في الحافظة الآن";
-    b.onclick = function(){
-      if (!navigator.clipboard || !navigator.clipboard.readText){
-        row("clipboard read", "unsupported", "bad"); return;
-      }
-      navigator.clipboard.readText().then(function(v){
-        row("clipboard holds", v, v === text ? "good" : "bad");
-        row("matches picked", String(v === text), v === text ? "good" : "bad");
-      }, function(e){
-        row("clipboard read failed", (e && e.name) || "?", "bad");
-      });
-    };
-    dbgBox.appendChild(b);
-  }
-
   /* ---------- التفاعل ---------- */
   document.getElementById("list").addEventListener("click", function(ev){
     var btn = ev.target.closest(".opt");
     if (!btn) return;
 
-    var gi   = parseInt(btn.getAttribute("data-i"), 10) || 0;
-    var vi   = Math.floor(Math.random() * V[gi].length);
-    var text = V[gi][vi];
+    var g    = V[parseInt(btn.getAttribute("data-i"), 10) || 0];
+    var text = g[Math.floor(Math.random() * g.length)];
     var t0   = Date.now();
 
     showToast();                       /* تأكيد فوري بلا انتظار */
 
-    copyNow(text, function(ok, info){  /* استُدعي أول شيء — الإيماءة ما زالت حيّة */
-      if (DBG){
-        toast.classList.remove("on");
-        dbgReport(gi, vi, text, ok, info);
-        return;                        /* بلا انتقال حتى تبقى اللوحة مقروءة */
-      }
+    copyNow(text, function(ok){        /* استُدعي أول شيء — الإيماءة ما زالت حيّة */
       if (!ok){
         toast.classList.remove("on");  /* لا نكذب على العميل */
         showRescue(text);
